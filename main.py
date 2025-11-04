@@ -2,9 +2,7 @@ from fastapi import FastAPI, UploadFile
 from typing import Dict
 from dotenv import load_dotenv
 
-from google_api import analyze_image
-from get_logger import app_logger
-# from analyze_image import analyze_image
+from gemini_api import analyze_image
 
 load_dotenv()
 # Create the FastAPI app instance
@@ -29,9 +27,8 @@ def analyze(image: UploadFile):
     with open(image_path, "wb") as f:
         f.write(image.file.read())
 
-    app_logger.info(f"Image saved to {image_path} for analysis.")
     result = analyze_image(image_path)
-    return result
+    return {"result": result}
 
 
 @app.get("/health")
