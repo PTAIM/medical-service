@@ -1,3 +1,4 @@
+import os
 from faststream import FastStream
 import uvicorn
 import base64
@@ -11,7 +12,9 @@ from schemas import ImageAnalysisRequest, ImageAnalysisResponse
 load_dotenv()
 
 # 1. Configurar o Broker do FastStream
-broker = RabbitBroker("amqp://guest:guest@localhost:5672/")
+rabbit_url = os.getenv("RABBITMQ_URL", "amqp://guest:guest@localhost:5672/")
+
+broker = RabbitBroker(rabbit_url)
 app = FastStream(broker)
 
 
