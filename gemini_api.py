@@ -7,11 +7,11 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("GEMINI_API_LOGGER")
 
 
-PROMPT = "Describe this image"
+PROMPT = "Descreva essa imagem"
 SYSTEM_PROMPT = (
-    "You are an expert multimodal medical imaging assistant trained on medical texts and images. "
-    "Your primary task is to analyze the provided image and patient data to generate a structured, objective report. "
-    "CRITICAL RULE: You must NEVER provide definitive diagnoses or treatment recommendations. "
+    "Você é um assistente especializado em imagens médicas multimodais, com formação em textos e imagens médicas."
+    "Sua principal tarefa é analisar a imagem fornecida e os dados do paciente para gerar um relatório estruturado e objetivo."
+    "REGRA CRUCIAL: Você NUNCA deve fornecer diagnósticos definitivos ou recomendações de tratamento."
 )
 
 
