@@ -19,7 +19,6 @@ app = FastStream(broker)
 
 
 @broker.subscriber(queue="image_analysis")
-@broker.publisher(queue="image_analysis_response")
 async def analyze_consumer(msg: ImageAnalysisRequest) -> ImageAnalysisResponse:
     """
     Escuta a fila "image_analysis", recebe os dados da imagem,
