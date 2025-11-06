@@ -1,39 +1,36 @@
-from fastapi import FastAPI, UploadFile
-from typing import Dict
+import os
+from faststream import FastStream
+import uvicorn
+import base64
+from typing import Dict, Any
 from dotenv import load_dotenv
+from faststream.rabbit import RabbitBroker
+from gemini_api import analyze_image_from_bytes
+from schemas import ImageAnalysisRequest, ImageAnalysisResponse
 
-from gemini_api import analyze_image
-
+# Carrega variáveis de ambiente
 load_dotenv()
-# Create the FastAPI app instance
-app = FastAPI()
+
+# 1. Configurar o Broker do FastStream
+rabbit_url = os.getenv("RABBITMQ_URL", "amqp://guest:guest@rabbitmq:5672/")
+
+broker = RabbitBroker(rabbit_url)
+app = FastStream(broker)
 
 
-@app.get("/")
-def read_root() -> Dict[str, str]:
+@broker.subscriber(queue="image_analysis")
+async def analyze_consumer(msg: ImageAnalysisRequest) -> ImageAnalysisResponse:
     """
-    Root endpoint for the API.
-    Returns a simple "Hello World" message.
+    Escuta a fila "image_analysis", recebe os dados da imagem,
+    e chama a função de análise.
     """
-    return {"Hello": "World"}
+    print("Recebido pedido de análise de imagem.")
+    # Decodificar a imagem de base64
+    image_bytes = base64.b64decode(msg.image_bytes)
 
+    # Chamar a função de análise demorada
+    result = analyze_image_from_bytes(image_bytes=image_bytes, mime_type=msg.mime_type)
 
-@app.post("/analyze")
-def analyze(image: UploadFile):
-    """
-    Analyze the uploaded image and return the results.
-    """
-    image_path = f"/tmp/{image.filename}"
-    with open(image_path, "wb") as f:
-        f.write(image.file.read())
-
-    result = analyze_image(image_path)
-    return {"result": result}
-
-
-@app.get("/health")
-def health_check() -> Dict[str, str]:
-    """
-    Health check endpoint.
-    """
-    return {"status": "healthy"}
+    # Imprimir o resultado no console do worker
+    print(f"Análise completa:\n{result}")
+    return ImageAnalysisResponse(analysis_text=result)
