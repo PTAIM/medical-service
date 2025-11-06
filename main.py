@@ -12,7 +12,7 @@ from schemas import ImageAnalysisRequest, ImageAnalysisResponse
 load_dotenv()
 
 # 1. Configurar o Broker do FastStream
-rabbit_url = os.getenv("RABBITMQ_URL", "amqp://guest:guest@localhost:5672/")
+rabbit_url = os.getenv("RABBITMQ_URL", "amqp://guest:guest@rabbitmq:5672/")
 
 broker = RabbitBroker(rabbit_url)
 app = FastStream(broker)
